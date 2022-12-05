@@ -1,7 +1,5 @@
 const handleBlogRouter = require('./src/router/blog')
 const handleUserRouter = require('./src/router/user')
-const querystring = require('querystring')
-
 // 用于处理PostData
 const getPostData = (req) => {
     const promise = new Promise((resolve, reject) => {
@@ -38,7 +36,22 @@ const serverHandle = (req, res) => {
     req.path = path
 
     // 解析query
-    req.query = querystring.parse(url.split('?')[1])
+    const query = {}
+    const urlSearchParams = new URLSearchParams(url.split('?')[1])
+    for(const [key, value] of urlSearchParams.entries()) {
+        query[key] = value
+    }
+    req.query = query
+
+    // 解析cookie
+    const cookie = {}
+    const cookieStr = req.headers.cookie || ''
+    cookieStr.split(';').forEach(item => {
+        const [key, value] = item.trim().split('=')
+        cookie[key] = value
+    })
+    req.cookie = cookie
+    console.log('cookie', cookie)
 
     // 处理postData
     getPostData(req).then(postData => {
