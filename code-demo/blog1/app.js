@@ -27,6 +27,13 @@ const getPostData = (req) => {
     return promise
 }
 
+const getUTCDateString = () => {
+    const t = new Date()
+    t.setTime(t.getTime() + 24 * 60 * 60 * 1000)
+    return t.toUTCString()
+}
+
+const SESSION_DATA ={}
 const serverHandle = (req, res) => {
     res.setHeader('Content-Type', 'application/json;charset=utf8')
 
@@ -54,6 +61,20 @@ const serverHandle = (req, res) => {
     })
     req.cookie = cookie
 
+    // 设置session
+    let needSetSession = false
+    let userId = req.cookie.userid
+    if(userId) {
+        if(!SESSION_DATA[userId]) {
+            SESSION_DATA[userId] = {}
+        }
+    } else {
+        needSetSession = true
+        userId = `${(new Date()).getTime()}_${Math.random()}`
+        SESSION_DATA[userId] = {}
+    }
+    req.session = SESSION_DATA[userId]
+
     // 处理postData
     getPostData(req).then(postData => {
         req.body = postData
@@ -61,6 +82,9 @@ const serverHandle = (req, res) => {
         const blogResult = handleBlogRouter(req, res)
         if(blogResult) {
             blogResult.then(blogData => {
+                if(needSetSession) {
+                    res.setHeader('Set-Cookie', `userid=${userId}; path=/; httpOnly; expires=${getUTCDateString()}`)
+                }
                 res.end(JSON.stringify(blogData))
             })
             return
@@ -70,6 +94,9 @@ const serverHandle = (req, res) => {
         const userResult = handleUserRouter(req, res)
         if(userResult) {
             userResult.then(userData => {
+                if(needSetSession) {
+                    res.setHeader('Set-Cookie', `userid=${userId}; path=/; httpOnly; expires=${getUTCDateString()}`)
+                }
                 res.end(JSON.stringify(userData))
             })
             return
