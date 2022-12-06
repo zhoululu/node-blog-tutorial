@@ -1,5 +1,6 @@
 const handleBlogRouter = require('./src/router/blog')
 const handleUserRouter = require('./src/router/user')
+const { set, get } = require('./src/db/redis')
 // 用于处理PostData
 const getPostData = (req) => {
     const promise = new Promise((resolve, reject) => {
@@ -33,7 +34,7 @@ const getUTCDateString = () => {
     return t.toUTCString()
 }
 
-const SESSION_DATA ={}
+// const SESSION_DATA = {}
 const serverHandle = (req, res) => {
     res.setHeader('Content-Type', 'application/json;charset=utf8')
 
@@ -62,21 +63,37 @@ const serverHandle = (req, res) => {
     req.cookie = cookie
 
     // 设置session
+    // let needSetSession = false
+    // let userId = req.cookie.userid
+    // if(userId) {
+    //     if(!SESSION_DATA[userId]) {
+    //         SESSION_DATA[userId] = {}
+    //     }
+    // } else {
+    //     needSetSession = true
+    //     userId = `${(new Date()).getTime()}_${Math.random()}`
+    //     SESSION_DATA[userId] = {}
+    // }
+    // req.session = SESSION_DATA[userId]
+
     let needSetSession = false
     let userId = req.cookie.userid
-    if(userId) {
-        if(!SESSION_DATA[userId]) {
-            SESSION_DATA[userId] = {}
-        }
-    } else {
+    if(!userId) {
         needSetSession = true
-        userId = `${(new Date()).getTime()}_${Math.random()}`
-        SESSION_DATA[userId] = {}
+        userId = `${Date.now()}_${Math.random()}`
+        set(userId, {})
     }
-    req.session = SESSION_DATA[userId]
-
-    // 处理postData
-    getPostData(req).then(postData => {
+    req.sessionId = userId
+    get(req.sessionId).then( sessionData => {
+        if(sessionData == null) {
+            set(req.sessionId, {})
+            req.session = {}
+        } else {
+            req.session = sessionData
+        }
+        return  getPostData(req)
+    })
+   .then(postData => {
         req.body = postData
         // 处理blog路由
         const blogResult = handleBlogRouter(req, res)
