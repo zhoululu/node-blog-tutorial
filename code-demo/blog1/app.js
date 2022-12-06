@@ -47,11 +47,12 @@ const serverHandle = (req, res) => {
     const cookie = {}
     const cookieStr = req.headers.cookie || ''
     cookieStr.split(';').forEach(item => {
-        const [key, value] = item.trim().split('=')
-        cookie[key] = value
+        if(item) {
+            const [key, value] = item.trim().split('=')
+            cookie[key] = value
+        }
     })
     req.cookie = cookie
-    console.log('cookie', cookie)
 
     // 处理postData
     getPostData(req).then(postData => {
