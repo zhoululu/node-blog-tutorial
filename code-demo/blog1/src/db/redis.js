@@ -8,7 +8,6 @@ const redisClient = redis.createClient(REDIS_CONF.port, REDIS_CONF.host)
   await redisClient.connect()
         .then(() => console.log('redis connect success!'))
         .catch(console.error)
-        await redisClient.set('kkkk', 'aaaa')
 })()
 
 
@@ -20,7 +19,6 @@ async function set(key, val) {
   } else {
     objVal = val
   }
-  console.log('set key value', key, objVal)
   await redisClient.set(key, objVal)
 }
 
