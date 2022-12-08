@@ -5,6 +5,6 @@ const PORT = 8000
 
 const server = http.createServer(serverHandle)
 
-server.listen(PORT)
+server.listen(PORT, '0.0.0.0')
 
 

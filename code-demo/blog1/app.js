@@ -1,6 +1,7 @@
 const handleBlogRouter = require('./src/router/blog')
 const handleUserRouter = require('./src/router/user')
 const { set, get } = require('./src/db/redis')
+const { access } =require('./src/utils/log')
 // 用于处理PostData
 const getPostData = (req) => {
     const promise = new Promise((resolve, reject) => {
@@ -34,8 +35,17 @@ const getUTCDateString = () => {
     return t.toUTCString()
 }
 
+const getClientIp = (req) => {
+    return req.headers['x-forwarded-for'] || // 判断是否有反向代理 IP
+    req.connection.remoteAddress || // 判断 connection 的远程 IP
+    req.socket.remoteAddress || // 判断后端的 socket 的 IP
+    req.connection.socket.remoteAddress;
+}
+
 // const SESSION_DATA = {}
 const serverHandle = (req, res) => {
+
+    access(`${req.method} -- ${req.url} -- ${req.headers['user-agent']} -- ${getClientIp(req)}`)
     res.setHeader('Content-Type', 'application/json;charset=utf8')
 
     // 获取path
