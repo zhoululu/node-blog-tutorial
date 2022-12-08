@@ -13,3 +13,12 @@ GET -- /favicon.ico -- Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537
 GET -- / -- Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 -- 172.16.30.206
 GET -- / -- Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 -- 172.16.30.206
 GET -- / -- Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 -- 172.16.10.2
+POST -- /api/user/login -- PostmanRuntime/7.29.2 -- 127.0.0.1
+POST -- /api/user/login -- PostmanRuntime/7.29.2 -- 127.0.0.1
+POST -- /api/user/login -- PostmanRuntime/7.29.2 -- 127.0.0.1
+POST -- /api/user/login -- PostmanRuntime/7.29.2 -- 127.0.0.1
+POST -- /api/user/login -- PostmanRuntime/7.29.2 -- 127.0.0.1
+POST -- /api/user/login -- PostmanRuntime/7.29.2 -- 127.0.0.1
+POST -- /api/user/login -- PostmanRuntime/7.29.2 -- 127.0.0.1
+POST -- /api/user/login -- PostmanRuntime/7.29.2 -- 127.0.0.1
+POST -- /api/user/login -- PostmanRuntime/7.29.2 -- 127.0.0.1
