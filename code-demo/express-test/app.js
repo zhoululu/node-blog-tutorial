@@ -5,14 +5,25 @@
  app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
-app.post('/api/get-post/data', (req, res, next) => {
-  console.log('aaaa', req.body)
+app.use((req, res, next) => {
+  console.log('1', req.url)
+  next()
+  console.log(2, req.url)
+})
+
+app.use((req, res, next) => {
+  console.log('3', req.url)
   setTimeout(() => {
-    res.json({
-      errno: 0,
-      message: '成功'
-    })
+    next()
   }, 2000)
+  console.log(4, req.url)
+})
+
+app.use((req, res, next) => {
+  console.log('5', req.url)
+  res.json({
+    name: 'zhangsan'
+  })
 })
 //  app.use((req, res, next) => {
 //   console.log('请求开始...', req.method, req.url)
