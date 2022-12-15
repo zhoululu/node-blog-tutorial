@@ -5,13 +5,18 @@ const json = require('koa-json')
 const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
-
+const session = require('koa-generic-session')
+const redisStore = require('koa-redis')
+const path = require('path')
+const fs = require('fs')
+const morgan = require('koa-morgan')
 
 const index = require('./routes/index')
 const users = require('./routes/users')
 const blog = require('./routes/blog')
 const user = require('./routes/user')
 
+const { REDIS_CONF } = require('./conf/db')
 // error handler
 onerror(app)
 
@@ -20,7 +25,7 @@ app.use(bodyparser({
   enableTypes:['json', 'form', 'text']
 }))
 app.use(json())
-app.use(logger())
+// app.use(logger())
 app.use(require('koa-static')(__dirname + '/public'))
 
 app.use(views(__dirname + '/views', {
@@ -34,6 +39,34 @@ app.use(async (ctx, next) => {
   const ms = new Date() - start
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
 })
+
+const ENV = process.env.NODE_ENV
+if(ENV != 'production') {
+  app.use(morgan('dev'))
+} else {
+  // 线上环境
+  const logFileName = path.resolve(__dirname, './logs/access.log')
+  const writeStream = fs.createWriteStream(logFileName)
+  app.use(morgan('combined', {
+    stream: writeStream
+  }))
+}
+
+// session配置
+app.keys = ['ZLL144280zll,./']
+app.use(session({
+  // 配置cookie
+  cookie: {
+    path: '/',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000
+  },
+  // 配置redis
+  store: redisStore({
+    // all: '127.0.0.1:6379' // 写死本地的redis
+    all: `${REDIS_CONF.host}:${REDIS_CONF.port}`
+  })
+}))
 
 // routes
 app.use(index.routes(), index.allowedMethods())
