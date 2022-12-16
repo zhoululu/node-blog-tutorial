@@ -22,9 +22,12 @@ const { User, Blog } = require('./model')
     where: {
       author: 'zhangsan',
       title: {
-        [Sequelize.Op.like]: '%标题C%' // 模糊查询 对比sql语句：select * from blogs where author='zhangsan' and title like '%标题%';
+        [Sequelize.Op.like]: '%标题C%' // 模糊查询 
       }
-    }
+    },
+    order: [ // 排序，对比 sql 语句
+      ['id', 'desc'] // 对比sql语句：select * from blogs where author='zhangsan' and title like '%标题%' order by updatedAt desc;
+    ]
   })
   // 查询不到，返回[], 查询到的数据在每一项的dataValues里面里面
   console.log(blogList && blogList.map(item => item.dataValues))

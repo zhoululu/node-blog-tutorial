@@ -47,7 +47,7 @@ router.post('/new', loginCheck, async (ctx, next) => {
 })
 // 更新一篇博客
 router.post('/update', loginCheck, async (ctx, next) => {
-  const result = await updateBlog(ctx.query.id, ctx.request.body)
+  const result = updateBlog(ctx.query.id, ctx.request.body)
   if(result) {
     ctx.body =  new SuccessModel()
     return
@@ -59,6 +59,7 @@ router.post('/update', loginCheck, async (ctx, next) => {
 router.post('/del', loginCheck, async (ctx, next) => {
   const author = ctx.session.username
   const result = await deleteBlog(ctx.query.id, author)
+  console.log('result.', result)
   if(result) {
     ctx.body =  new SuccessModel()
     return
